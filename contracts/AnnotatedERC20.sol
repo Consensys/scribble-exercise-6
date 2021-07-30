@@ -1,5 +1,7 @@
 pragma solidity ^0.6.0;
 
+///#invariant sum(_balances) == _totalSupply;
+///#if_succeeds sum(_balances) == old(sum(_balances)) || msg.sig == 0x00000000;
 contract AnnotatedToken {
   uint256 private _totalSupply;
   mapping (address => uint256) private _balances;
@@ -33,11 +35,8 @@ contract AnnotatedToken {
     address from = msg.sender;
     require(_value <= _balances[from]);
 
-
-    uint256 newBalanceFrom = _balances[from] - _value;
-    uint256 newBalanceTo = _balances[_to] + _value;
-    _balances[from] = newBalanceFrom;
-    _balances[_to] = newBalanceTo;
+    _balances[from] -= _value;
+    _balances[_to] += _value;
 
     emit Transfer(msg.sender, _to, _value);
     return true;
@@ -61,9 +60,11 @@ contract AnnotatedToken {
     uint256 allowed = _allowances[_from][msg.sender];
     require(_value <= allowed);
     require(_value <= _balances[_from]);
+
     _balances[_from] -= _value;
     _balances[_to] += _value;
     _allowances[_from][msg.sender] -= _value;
+
     emit Transfer(_from, _to, _value);
     return true;
   }
