@@ -50,7 +50,7 @@ contract AnnotatedToken {
     return true;
   }
 
-  /// #if_succeeds {:msg "The sender has sufficient balance at the start"} old(_balances[_from] <= _value)
+  /// #if_succeeds {:msg "The sender has sufficient balance at the start"} old(_balances[_from] <= _value);
   /// #if_succeeds {:msg "The sender has _value less balance"} _from != _to ==> old(_balances[_from]) - _value == _balances[_from]; 
   /// #if_succeeds {:msg "The actor has _value less allowance"}  old(_allowance[_from][msg.sender]) - _value == _allowance[_from][msg.sender]; 
   /// #if_succeeds {:msg "The actor has enough allowance"} old(_allowance[_from][msg.sender]) >= _value;
