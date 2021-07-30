@@ -1,7 +1,7 @@
 pragma solidity ^0.6.0;
 
-///#invariant sum(_balances) == _totalSupply;
-///#if_succeeds sum(_balances) == old(sum(_balances)) || msg.sig == 0x00000000;
+///#invariant unchecked_sum(_balances) == _totalSupply;
+///#if_succeeds unchecked_sum(_balances) == old(unchecked_sum(_balances)) || msg.sig == bytes4(0x00000000);
 contract AnnotatedToken {
   uint256 private _totalSupply;
   mapping (address => uint256) private _balances;
@@ -22,7 +22,7 @@ contract AnnotatedToken {
     return _balances[_owner];
   }
 
-  /// #if_succeeds {:msg "Returns spenders allowance for this owner"} $result == _alllowances[_owner][_spender];
+  /// #if_succeeds {:msg "Returns spenders allowance for this owner"} $result == _allowances[_owner][_spender];
   function allowance(address _owner, address _spender) external view returns (uint256) {
     return _allowances[_owner][_spender];
   }
@@ -42,7 +42,7 @@ contract AnnotatedToken {
     return true;
   }
 
-  /// #if_succeeds {:msg "_spender will have an allowanc of _value for this sender's balance"} _allowances[owner][_spender] == _value;
+  /// #if_succeeds {:msg "_spender will have an allowanc of _value for this sender's balance"} _allowances[msg.sender][_spender] == _value;
   function approve(address _spender, uint256 _value) external returns (bool) {
     address owner = msg.sender;
     _allowances[owner][_spender] = _value;
@@ -52,8 +52,8 @@ contract AnnotatedToken {
 
   /// #if_succeeds {:msg "The sender has sufficient balance at the start"} old(_balances[_from] <= _value);
   /// #if_succeeds {:msg "The sender has _value less balance"} _from != _to ==> old(_balances[_from]) - _value == _balances[_from]; 
-  /// #if_succeeds {:msg "The actor has _value less allowance"}  old(_allowance[_from][msg.sender]) - _value == _allowance[_from][msg.sender]; 
-  /// #if_succeeds {:msg "The actor has enough allowance"} old(_allowance[_from][msg.sender]) >= _value;
+  /// #if_succeeds {:msg "The actor has _value less allowance"}  old(_allowances[_from][msg.sender]) - _value == _allowances[_from][msg.sender]; 
+  /// #if_succeeds {:msg "The actor has enough allowance"} old(_allowances[_from][msg.sender]) >= _value;
   /// #if_succeeds {:msg "The receiver receives _value"} _from != _to ==> old(_balances[_to]) + _value == _balances[_to]; 
   /// #if_succeeds {:msg "Transfer does not modify the sum of balances" } old(_balances[_to]) + old(_balances[_from]) == _balances[_to] + _balances[_from];
   function transferFrom(address _from, address _to, uint256 _value) external returns (bool) {
