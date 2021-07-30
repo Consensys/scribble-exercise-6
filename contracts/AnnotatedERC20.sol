@@ -27,7 +27,7 @@ contract AnnotatedToken {
     return _allowances[_owner][_spender];
   }
 
-  /// #if_succeeds {:msg "The sender has sufficient balance at the start"} old(_balances[msg.sender] <= _value)
+  /// #if_succeeds {:msg "The sender has sufficient balance at the start"} old(_balances[msg.sender] <= _value);
   /// #if_succeeds {:msg "The sender has _value less balance"} msg.sender != _to ==> old(_balances[msg.sender]) - _value == _balances[msg.sender]; 
   /// #if_succeeds {:msg "The receiver receives _value"} msg.sender != _to ==> old(_balances[_to]) + _value == _balances[_to]; 
   /// #if_succeeds {:msg "Transfer does not modify the sum of balances" } old(_balances[_to]) + old(_balances[msg.sender]) == _balances[_to] + _balances[msg.sender];
